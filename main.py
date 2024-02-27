@@ -131,8 +131,7 @@ def main(args):
                         round,
                         )
 
-        # torch.save(get_peft_model_state_dict(model), os.path.join(output_dir, str(epoch), "adapter_model.bin"))
-        # save checkpoints every 5 rounds
+        # save checkpoints every 20 rounds
         if (round+1) % 20 == 0:
             torch.save(get_peft_model_state_dict(model), os.path.join(args.output_dir, "aggregated_model_{}.bin".format(round)))
         # delete the clients's weights to save storage space, optional

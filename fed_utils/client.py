@@ -13,7 +13,7 @@ from peft import (
 from torch.utils.data import DataLoader
 from fed_utils.Scaffold_utils import ScaffoldOptimizer, write_variate_to_file
 from fed_utils.FedProx_utils import FedProx
-
+from utils.select_trainer_optimizer import select_trainer
 class GenerateClient:
     def __init__(self, args, client_id, model, output_dir, client_c=None, server_c=None):
         self.args = args
@@ -56,31 +56,18 @@ class GenerateClient:
                 server_c = self.server_c,
                 client_c = self.client_c
             )
-            dataset_len = len(self.local_train_dataset)
-            # decay 1/8 of the learning rate, Scaffold needs larger lr to optimize
-            # per_device_train_batch_size=self.args.local_batch_size, we have 8 GPUs
-            # so actually, the totally global batch size = 8 * self.args.local_batch_size
-            # because Trainer will Automatically use DP to train.
-            steps = math.ceil(dataset_len / (self.args.local_batch_size)) * self.args.local_num_epochs
-            lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=1, end_factor=0, total_iters=steps)
         else:
-            # use the default optimizer and lr_scheduler
-            optimizer = None
-            lr_scheduler = None
+            # use the default optimizer
+            optimizer = torch.optim.AdamW(params=self.model.parameters(), lr=local_learning_rate)
+        # setup local lr_scheduler
+        dataset_len = len(self.local_train_dataset)
+        steps = math.ceil(dataset_len / (self.args.local_batch_size)) * self.args.local_num_epochs
+        lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=1, end_factor=0, total_iters=steps)
         # select data_collator
         data_collator = transformers.DataCollatorWithPadding(tokenizer=tokenizer, return_tensors="pt")
-
-        if self.args.useFedProx:
-            self.local_trainer = FedProxTrainer(
-                model=self.model,
-                optimizers=(optimizer, lr_scheduler),
-                train_dataset=self.local_train_dataset,
-                eval_dataset=self.local_eval_dataset,
-                args=self.train_args,
-                data_collator=data_collator
-            )
-        else:
-            self.local_trainer = transformers.Trainer(
+        # select trainer
+        trainer = select_trainer(self.args.useFedProx)
+        self.local_trainer = trainer(
                 model=self.model,
                 optimizers=(optimizer, lr_scheduler),
                 train_dataset=self.local_train_dataset,
