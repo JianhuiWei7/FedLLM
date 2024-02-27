@@ -1,5 +1,4 @@
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
-import torch
 from peft import LoraConfig, get_peft_model
 def get_Bert_based_model_and_tokenizer(model_path, num_labels):
     # device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

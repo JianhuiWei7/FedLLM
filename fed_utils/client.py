@@ -35,12 +35,12 @@ class GenerateClient:
 
     def build_local_trainer(self,
                             tokenizer,
-                            local_micro_batch_size,
+                            local_batch_size,
                             local_num_epochs,
                             local_learning_rate,
                             ):
         self.train_args = transformers.TrainingArguments(
-            per_device_train_batch_size=local_micro_batch_size,
+            per_device_train_batch_size=local_batch_size,
             num_train_epochs=local_num_epochs,
             learning_rate=local_learning_rate,
             logging_strategy="steps",
@@ -88,11 +88,11 @@ class GenerateClient:
 
     def train_trainer_ddp(self,
                           tokenizer,
-                          local_micro_batch_size,
+                          local_batch_size,
                           local_num_epochs,
                           local_learning_rate,
                           ):
-        self.build_local_trainer(tokenizer,local_micro_batch_size,local_num_epochs,local_learning_rate)
+        self.build_local_trainer(tokenizer,local_batch_size,local_num_epochs,local_learning_rate)
         self.initiate_local_training()
         self.train()
 

@@ -40,7 +40,7 @@ class Evaluator():
         cols = ['instruction', 'response', 'context', 'category']
         cleared_testset = testset["train"].shuffle().map(self.generate_prompt_for_bert_based, remove_columns=cols)
         cleared_testset.set_format(type="torch", columns=["full_prompt", "label"])
-        self.dataloader = DataLoader(cleared_testset, batch_size=args.local_micro_batch_size*4, drop_last=False)
+        self.dataloader = DataLoader(cleared_testset, batch_size=args.local_batch_size, drop_last=False)
 
     
     def batch_run(self, batch_input):
