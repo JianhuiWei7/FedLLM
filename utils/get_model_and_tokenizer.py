@@ -2,14 +2,11 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import torch
 from peft import LoraConfig, get_peft_model
 def get_Bert_based_model_and_tokenizer(model_path, num_labels):
-    # id2label = {0: "NEGATIVE", 1: "POSITIVE"}
-    # label2id = {"NEGATIVE": 0, "POSITIVE": 1}
-    # num_labels=2
-    device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # load model to GPU
     model = AutoModelForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_path, num_labels=num_labels)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model=model.to(device)
+    # model=model.to(device)
     return model, tokenizer
 
 def get_lora_peft_model(model, args):
