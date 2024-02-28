@@ -41,6 +41,7 @@ class GenerateClient:
                             ):
         self.train_args = transformers.TrainingArguments(
             per_device_train_batch_size=local_batch_size,
+            per_device_train_batch_size=local_batch_size,
             num_train_epochs=local_num_epochs,
             learning_rate=local_learning_rate,
             logging_strategy="steps",

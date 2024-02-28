@@ -59,7 +59,6 @@ def main(args):
     local_dataset_len_dict = dict()
     evaluator = Evaluator(args)
     evaluator.tokenizer = tokenizer
-
     training_start_time = time.time()
     print("The process of federated instruction-tuning has started..")
     for round in tqdm(range(start_round, args.num_communication_rounds)):
@@ -69,8 +68,7 @@ def main(args):
         else:
             server_c = None
         print("\nConducting the client selection")
-        selected_clients_set = client_selection(args.num_clients, args.client_selection_frac, args.client_selection_strategy,
-                                                other_info=round)
+        selected_clients_set = client_selection(args.num_clients, args.client_selection_frac, args.client_selection_strategy, other_info=round)
         for client_id in selected_clients_set:
             if args.useScaffold:
                 filename = os.path.join(dir_name, "client"+str(client_id))
@@ -78,11 +76,9 @@ def main(args):
             else:
                 client_c = None
             client = GenerateClient(args, client_id, model, args.output_dir, client_c, server_c)
-            
             print("\nPreparing the local dataset and trainer for Client_{}".format(client_id))
             client.load_raw_load()
             client.preprare_local_dataset(data_tokenizer.generate_and_tokenize_prompt)
-
             client.build_local_trainer(tokenizer,
                                        args.local_batch_size,
                                        args.local_num_epochs,
@@ -91,7 +87,6 @@ def main(args):
             client.initiate_local_training()
             print("Local training starts ... ")
             client.train()
-
             print("\nTerminating the local training of Client_{}".format(client_id))
             model, local_dataset_len_dict, previously_selected_clients_set = client.terminate_local_training(
                 round, local_dataset_len_dict, previously_selected_clients_set)
