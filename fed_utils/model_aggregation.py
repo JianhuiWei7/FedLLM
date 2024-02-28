@@ -38,15 +38,15 @@ def FedAvgM(model, selected_clients_set, output_dir, local_dataset_len_dict, epo
                                          "pytorch_model.bin")
         single_weights = torch.load(single_output_dir)
         if k == 0:
-            weights_difference = {key: (old_param[key]-single_weights[key]) * (weights_array[k]) for key in
+            weights_difference = {key: (old_param[key].cpu()-single_weights[key].cpu()) * (weights_array[k]) for key in
                                        single_weights.keys()}
         else:
-            weights_difference = {key: weights_difference[key] + (old_param[key]-single_weights[key]) * (weights_array[k])
+            weights_difference = {key: weights_difference[key] + (old_param[key].cpu()-single_weights[key].cpu()) * (weights_array[k])
                                        for key in
                                        single_weights.keys()}
     
-    new_momentum = {key: momentum[key] * beta + weights_difference[key] for key in momentum.keys()}
-    new_param = {key: old_param[key] - new_momentum[key] for key in old_param.keys()}
+    new_momentum = {key: momentum[key].cpu() * beta + weights_difference[key] for key in momentum.keys()}
+    new_param = {key: old_param[key].cpu() - new_momentum[key] for key in old_param.keys()}
     set_peft_model_state_dict(model, new_param, "default")
     return model, new_momentum
 
@@ -61,10 +61,10 @@ def ScaffoldAggregation(model, selected_clients_set, output_dir, local_dataset_l
                                          "pytorch_model.bin")
         single_weights = torch.load(single_output_dir)
         if k == 0:
-            weighted_single_weights = {key: single_weights[key] * (weights_array[k]) for key in
+            weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) for key in
                                        single_weights.keys()}
         else:
-            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key] * (weights_array[k])
+            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key].cpu() * (weights_array[k])
                                        for key in
                                        single_weights.keys()}
 
@@ -75,6 +75,7 @@ def ScaffoldAggregation(model, selected_clients_set, output_dir, local_dataset_l
         filename = os.path.join(dir_name, "client"+str(i))
         local_variate = load_variate(filename=filename)
         for k,v in local_variate.items():
+            v = v.cpu()
             if index == 0:
                 server_c[k] = v.data / num_clients
             else:

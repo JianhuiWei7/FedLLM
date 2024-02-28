@@ -27,7 +27,7 @@ def parse_args():
     # Scaffold related arguments
     parser.add_argument('--useScaffold', type=bool, default=False, help='Whether or not use Scaffold')
     parser.add_argument('--scaffold_dir', type=str, default='/home/jianhuiwei/rsch/jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
-    
+    # global batch size needs to multiply "local_batch_size" with x(number of GPUs)
     parser.add_argument('--local_batch_size', type=int, default=8, help='Local batch size')
     # parser.add_argument('--local_micro_batch_size', type=int, default=32, help='Local micro batch size, 16 for 20news,quail. 32 for GLUE')
     parser.add_argument('--local_num_epochs', type=int, default=2, help='Local number of epochs')
