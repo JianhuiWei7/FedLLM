@@ -124,12 +124,17 @@ def main(args):
         if (round+1) % 20 == 0:
             torch.save(get_peft_model_state_dict(model), os.path.join(args.output_dir, "aggregated_model_{}.bin".format(round)))
         # delete the clients's weights to save storage space, optional
-        shutil.rmtree(os.path.join(args.output_dir, str(round)))
+        weights_path = os.path.join(args.output_dir, str(round-1))
+        if os.path.exists(weights_path):
+            shutil.rmtree(weights_path)
         config.save_pretrained(args.output_dir)
         # if (epoch+1) % 2 == 0:    
         evaluate(round, evaluator, model, args.dataset)
         print("END OF COMMUNICATION: " + str(round))
     training_over_time = time.time()
+    weights_path = os.path.join(args.output_dir, str(round))
+    if os.path.exists(weights_path):
+        shutil.rmtree(weights_path)
     training_time = int(round((training_over_time - training_start_time)))
     print("Total training time: " + str(datetime.timedelta(seconds = training_time)))
 if __name__ == "__main__":

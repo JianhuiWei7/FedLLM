@@ -47,7 +47,7 @@ class GenerateClient:
             logging_steps=1,
             output_dir=self.local_output_dir,
             dataloader_drop_last=False,
-            ddp_find_unused_parameters=False
+            ddp_find_unused_parameters=True
         )
         # select optimizer
         if self.args.useScaffold:

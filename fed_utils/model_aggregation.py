@@ -18,12 +18,9 @@ def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoc
                                          "pytorch_model.bin")
         single_weights = torch.load(single_output_dir)
         if k == 0:
-            weighted_single_weights = {key: single_weights[key] * (weights_array[k]) for key in
-                                       single_weights.keys()}
+            weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
         else:
-            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key] * (weights_array[k])
-                                       for key in
-                                       single_weights.keys()}
+            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
 
     set_peft_model_state_dict(model, weighted_single_weights, "default")
 

@@ -12,8 +12,8 @@ def parse_args():
     parser.add_argument('--lora_target_modules', nargs='+', default=["q_proj", "k_proj", "v_proj", "o_proj"], help='LoRA target modules')
     
     parser.add_argument('--dataset', type=str, default='20news', help='Dataset to use')
-    parser.add_argument('--dirichlet_alpha', type=float, default=0.2, help='dirichlet alpha parameter, 1, 1.5, 2')
-    parser.add_argument('--partition_method', type=str, default="dirichlet_label_uni", help='The method used to partition the data, choose from [''iid'', ''dirichlet_label_uni'', ''dirichlet_label'', ''dirichlet_quantity'']')
+    parser.add_argument('--dirichlet_alpha', type=float, default=1, help='dirichlet alpha parameter, 1, 1.5, 2')
+    parser.add_argument('--partition_method', type=str, default="iid", help='The method used to partition the data, choose from [''iid'', ''dirichlet_label_uni'', ''dirichlet_label'', ''dirichlet_quantity'']')
     parser.add_argument('--client_selection_strategy', type=str, default='random', help='Client selection strategy')
     parser.add_argument('--client_selection_frac', type=float, default=0.4, help='Fraction of clients to select')
     parser.add_argument('--num_communication_rounds', type=int, default=50, help='Number of communication rounds')
