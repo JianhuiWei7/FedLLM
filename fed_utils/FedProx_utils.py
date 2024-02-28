@@ -34,7 +34,7 @@ class FedProxTrainer(Trainer):
         # print("proximal term loss: " + str(0.5 * self.proximal_term_mu * proximal_term))
         # print("loss: ", loss)
         loss += 0.5 * self.proximal_term_mu * proximal_term
-        print("proximal_term_loss: ", 0.5 * self.proximal_term_mu * proximal_term)
+        # print("proximal_term_loss: ", 0.5 * self.proximal_term_mu * proximal_term)
         return (loss, outputs) if return_outputs else loss
     
 class FedProx(Optimizer):

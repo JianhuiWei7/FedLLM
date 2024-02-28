@@ -127,14 +127,15 @@ def main(args):
         # if (epoch+1) % 2 == 0:    
         evaluate(round, evaluator, model, args.dataset)
         print("END OF COMMUNICATION: " + str(round))
-    training_over_time = time.time()
-    training_time = int(round((training_over_time - training_start_time)))
-    print("Total training time: " + str(datetime.timedelta(seconds = training_time)))
-    # delete the clients's weights to save storage space, optional
     for round in tqdm(range(0, args.num_communication_rounds)):
         weights_path = os.path.join(args.output_dir, str(round))
         if os.path.exists(weights_path):
             shutil.rmtree(weights_path)
+    training_over_time = time.time()
+    training_time = training_over_time - training_start_time
+    print("Total training time: " + str(datetime.timedelta(seconds=training_time)))
+    # delete the clients's weights to save storage space, optional
+    
 if __name__ == "__main__":
     args = parse_args()
     main(args)
