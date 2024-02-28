@@ -21,9 +21,6 @@ class Evaluator():
         self.args = args
         self.tokenizer = None
         self.model = None
-        self.testset_path =  {
-            "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/test.json",
-        }
         self.save_path = {
             "20news": "./output/20news",
         }
@@ -36,11 +33,11 @@ class Evaluator():
         if not os.path.exists(self.output_directory):
             os.makedirs(self.output_directory)
         self.output_short_result_file_name = os.path.join(self.output_directory, "short_result.txt")
-        testset = load_dataset("json", data_files=self.testset_path[args.dataset])
+        testset = load_dataset("json", data_files=args.test_data_path)
         cols = ['instruction', 'response', 'context', 'category']
         cleared_testset = testset["train"].shuffle().map(self.generate_prompt_for_bert_based, remove_columns=cols)
         cleared_testset.set_format(type="torch", columns=["full_prompt", "label"])
-        self.dataloader = DataLoader(cleared_testset, batch_size=args.local_micro_batch_size*4, drop_last=False)
+        self.dataloader = DataLoader(cleared_testset, batch_size=args.local_batch_size, drop_last=False)
 
     
     def batch_run(self, batch_input):

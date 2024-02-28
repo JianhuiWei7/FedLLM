@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument('--useScaffold', type=bool, default=False, help='Whether or not use Scaffold')
     parser.add_argument('--scaffold_dir', type=str, default='/home/jianhuiwei/rsch/jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
     
-    parser.add_argument('--local_batch_size', type=int, default=64, help='Local batch size')
+    parser.add_argument('--local_batch_size', type=int, default=8, help='Local batch size')
     # parser.add_argument('--local_micro_batch_size', type=int, default=32, help='Local micro batch size, 16 for 20news,quail. 32 for GLUE')
     parser.add_argument('--local_num_epochs', type=int, default=2, help='Local number of epochs')
     parser.add_argument('--local_learning_rate', type=float, default=3e-4, help='Local learning rate, 3e-3试过了, for alpaca-lora: 3e-4')
@@ -44,17 +44,24 @@ def parse_args():
         '20news':20,
     }
     model_paths = {
-        'roberta': '/home/jianhuiwei/rsch/jianhui/roberta-base',
+        # 'roberta': '/home/jianhuiwei/rsch/jianhui/roberta-base',
+        'roberta': '/data/jianhui/roberta-base',
     }
     output_dirs = {
-        # "/home/jianhuiwei/rsch/jianhui/checkpoints"
         'roberta':{
-            'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora',
+            # 'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora',
+            'lora': '/data/jianhui/checkpoints/roberta-lora'
         },
     }
     data_paths = {
-        "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news",
+        # "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news",
+        '20news': "/data/jianhui/dataset/20news"
     }
+    test_data_paths = {
+        # "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/test.json",
+        "20news": "/data/jianhui/dataset/20news/test.json",
+    }
+    args.test_data_path = test_data_paths[args.dataset]
     args.output_dir = output_dirs[args.model][args.peft_method]
     if args.useFedProx:
         args.federated_method='FedProx-' + str(args.proximal_term_argument)

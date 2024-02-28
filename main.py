@@ -25,7 +25,6 @@ from peft import (
     get_peft_model_state_dict,
 )
 from parse import parse_args
-from accelerate import notebook_launcher
 def main(args):
     # to be able to replicate the experiment results
     setup_seed(7)
@@ -83,21 +82,16 @@ def main(args):
             print("\nPreparing the local dataset and trainer for Client_{}".format(client_id))
             client.load_raw_load()
             client.preprare_local_dataset(data_tokenizer.generate_and_tokenize_prompt)
-            # here
-            number_of_gpu = torch.cuda.device_count()
-            notebook_launcher(client.train_trainer_ddp, args=(), num_processes=number_of_gpu)
-            # client.build_local_trainer(tokenizer,
-            #                            args.local_batch_size,
-            #                            args.local_num_epochs,
-            #                            args.local_learning_rate,
-            #                            args.group_by_length,)
 
-            # print("Initiating the local training of Client_{}".format(client_id))
-            # client.initiate_local_training()
+            client.build_local_trainer(tokenizer,
+                                       args.local_batch_size,
+                                       args.local_num_epochs,
+                                       args.local_learning_rate)
+            print("Initiating the local training of Client_{}".format(client_id))
+            client.initiate_local_training()
+            print("Local training starts ... ")
+            client.train()
 
-            # print("Local training starts ... ")
-            # client.train()
-            # here
             print("\nTerminating the local training of Client_{}".format(client_id))
             model, local_dataset_len_dict, previously_selected_clients_set = client.terminate_local_training(
                 round, local_dataset_len_dict, previously_selected_clients_set)
