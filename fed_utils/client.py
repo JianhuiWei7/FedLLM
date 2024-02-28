@@ -41,7 +41,6 @@ class GenerateClient:
                             ):
         self.train_args = transformers.TrainingArguments(
             per_device_train_batch_size=local_batch_size,
-            per_device_train_batch_size=local_batch_size,
             num_train_epochs=local_num_epochs,
             learning_rate=local_learning_rate,
             logging_strategy="steps",
@@ -88,15 +87,6 @@ class GenerateClient:
             self.local_trainer.set_proximal_term_mu(self.args.proximal_term_argument)
         self.local_trainer.train()
 
-    # def train_trainer_ddp(self,
-    #                       tokenizer,
-    #                       local_micro_batch_size,
-    #                       local_num_epochs,
-    #                       local_learning_rate,
-    #                       ):
-    #     self.build_local_trainer(tokenizer,local_micro_batch_size,local_num_epochs,local_learning_rate)
-    #     self.initiate_local_training()
-    #     self.train()
 
     def terminate_local_training(self, epoch, local_dataset_len_dict, previously_selected_clients_set):
         # update local control variate and save it to file
