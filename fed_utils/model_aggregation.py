@@ -64,16 +64,17 @@ def ScaffoldAggregation(model, selected_clients_set, output_dir, local_dataset_l
         single_weights = None
         try:
             single_weights = torch.load(single_output_dir)
-        except EOFError:
+        except BaseException:
             try:
                 time.sleep(0.5)
                 single_weights = torch.load(single_output_dir)
             except BaseException:
-                time.sleep(0.5)
-                single_weights = torch.load(single_output_dir)
-        except RuntimeError:
-            time.sleep(0.5)
-            single_weights = torch.load(single_output_dir)
+                try:
+                    time.sleep(0.5)
+                    single_weights = torch.load(single_output_dir)
+                except BaseException:
+                    time.sleep(0.5)
+                    single_weights = torch.load(single_output_dir)
 
         
         if k == 0:

@@ -50,6 +50,9 @@ class GenerateClient:
             ddp_find_unused_parameters=True
         )
         # select optimizer
+        dataset_len = len(self.local_train_dataset)
+        steps = math.ceil(dataset_len / (self.args.local_batch_size)) * self.args.local_num_epochs
+        lr_scheduler = None
         if self.args.useScaffold:
             optimizer = ScaffoldOptimizer(
                 params = self.model.parameters(),
@@ -57,13 +60,13 @@ class GenerateClient:
                 server_c = self.server_c,
                 client_c = self.client_c
             )
+            lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=1, end_factor=0.5, total_iters=steps)
         else:
             # use the default optimizer
             optimizer = torch.optim.AdamW(params=self.model.parameters(), lr=local_learning_rate)
         # setup local lr_scheduler
-        dataset_len = len(self.local_train_dataset)
-        steps = math.ceil(dataset_len / (self.args.local_batch_size)) * self.args.local_num_epochs
-        lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=1, end_factor=0, total_iters=steps)
+        if not lr_scheduler:
+            lr_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer,start_factor=1, end_factor=0, total_iters=steps)
         # select data_collator
         data_collator = transformers.DataCollatorWithPadding(tokenizer=tokenizer, return_tensors="pt")
         # select trainer
