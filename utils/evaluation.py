@@ -49,9 +49,9 @@ class Evaluator():
         tokenized_inputs = tokenized_inputs.to(device)
         outputs = self.model(**tokenized_inputs)
         logits = outputs.logits
-        response = torch.argmax(logits, dim=-1)
-        response = [res.cpu() for res in response]
-        return response
+        cuda_response = torch.argmax(logits, dim=-1)
+        cpu_response = [res.cpu() for res in cuda_response]
+        return cpu_response, cuda_response
     
     def generate_prompt_for_bert_based(self, data_point):
         data_dict = {
@@ -76,7 +76,7 @@ def evaluate(rnd, evaluator, model, dataset):
     global_list_of_labels = []
     with torch.no_grad():
         for batch in tqdm(evaluator.dataloader, desc="Evaluating"):
-            list_of_response = evaluator.batch_run(batch)
+            list_of_response, _ = evaluator.batch_run(batch)
             # list_of_response=gather_object(list_of_response)
             # batch['label']=gather_object(batch['label'])
             global_list_of_response += list_of_response
@@ -102,11 +102,11 @@ def ddp_evaluate(rnd, evaluator, model, dataset):
     global_list_of_labels = []
     with torch.no_grad():
         for batch in tqdm(evaluator.dataloader, desc="Evaluating"):
-            list_of_response = evaluator.batch_run(batch)
-            list_of_response=gather_object(list_of_response)
-            batch['label']=gather_object(batch['label'])
-            global_list_of_response += list_of_response
-            global_list_of_labels += batch['label']
+            _, list_of_response = evaluator.batch_run(batch)
+            list_of_responses = accelerator.gather_for_metrics(list_of_response)
+            list_of_labels = accelerator.gather_for_metrics(batch['label'])
+            global_list_of_response += list_of_responses
+            global_list_of_labels += list_of_labels
     all = len(global_list_of_response)
     for pred, label in zip(global_list_of_response, global_list_of_labels):
         if(pred == label):
