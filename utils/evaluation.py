@@ -112,7 +112,7 @@ def ddp_evaluate(rnd, evaluator, model, dataset):
         if(pred == label):
             correct += 1
     acc = correct / all
-    print(f"Accuracy of the {dataset} dataset: {acc:.4f} (Correct: {correct}, Total: {all})")
+    accelerator.print(f"Accuracy of the {dataset} dataset: {acc:.4f} (Correct: {correct}, Total: {all})")
     short_result = str(acc)
     evaluator.write_to_file(index=rnd, result=short_result)
     # evaluator.write_to_file(index=rnd, result=all)

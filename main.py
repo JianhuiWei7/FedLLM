@@ -38,7 +38,7 @@ def main(args):
     model.print_trainable_parameters()
     
     data_tokenizer = DataTokenizer(args=args, tokenizer=tokenizer)
-    if args.useScaffold:
+    if args.useScaffold and not args.resume_from_checkpoint:
         # initialize server control variate and client control variate.
         dir_name = args.scaffold_dir
         initialize_server_and_client_control_variate(model, args.num_clients, dir_name)

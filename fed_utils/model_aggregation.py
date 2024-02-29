@@ -1,3 +1,4 @@
+import time
 from peft import (
     set_peft_model_state_dict,  
     get_peft_model_state_dict,
@@ -59,7 +60,22 @@ def ScaffoldAggregation(model, selected_clients_set, output_dir, local_dataset_l
     for k, client_id in enumerate(selected_clients_set):
         single_output_dir = os.path.join(output_dir, str(epoch), "local_output_{}".format(client_id),
                                          "pytorch_model.bin")
-        single_weights = torch.load(single_output_dir)
+        
+        single_weights = None
+        try:
+            single_weights = torch.load(single_output_dir)
+        except EOFError:
+            try:
+                time.sleep(0.5)
+                single_weights = torch.load(single_output_dir)
+            except BaseException:
+                time.sleep(0.5)
+                single_weights = torch.load(single_output_dir)
+        except RuntimeError:
+            time.sleep(0.5)
+            single_weights = torch.load(single_output_dir)
+
+        
         if k == 0:
             weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) for key in
                                        single_weights.keys()}
@@ -73,7 +89,11 @@ def ScaffoldAggregation(model, selected_clients_set, output_dir, local_dataset_l
     server_c = {}
     for index, i in enumerate(selected_clients_set):
         filename = os.path.join(dir_name, "client"+str(i))
-        local_variate = load_variate(filename=filename)
+        try:
+            local_variate = load_variate(filename=filename)
+        except BaseException:
+            time.sleep(0.5)
+            local_variate = load_variate(filename=filename)
         for k,v in local_variate.items():
             v = v.cpu()
             if index == 0:

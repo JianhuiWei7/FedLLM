@@ -6,6 +6,7 @@
 @Motto: Hungry And Humble
 """
 import math
+import time
 from transformers import Trainer
 from torch.optim import Optimizer
 import pickle
@@ -109,13 +110,27 @@ class ScaffoldOptimizer(Optimizer):
         #     return loss
 
 def write_variate_to_file(variate, filename):
-    with open(filename, 'wb') as write_f:
-        pickle.dump(variate, write_f)                     
+    try:
+        with open(filename, 'wb') as write_f:
+            pickle.dump(variate, write_f) 
+            write_f.close()   
+    except BaseException:
+        time.sleep(0.5)
+        with open(filename, 'wb') as write_f:
+            pickle.dump(variate, write_f) 
+            write_f.close()         
     return filename
 
 def load_variate(filename):
-    with open(filename, 'rb') as f:
-        variate = pickle.load(f)
+    try:
+        with open(filename, 'rb') as f:
+            variate = pickle.load(f)
+            f.close()
+    except BaseException:
+        time.sleep(0.5)
+        with open(filename, 'rb') as f:
+            variate = pickle.load(f)
+            f.close()
     return variate
     
 def initialize_server_and_client_control_variate(model, num_clients, dir_name):
