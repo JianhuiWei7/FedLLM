@@ -5,6 +5,7 @@ from utils import (
     get_lora_peft_model,
     Evaluator,
     evaluate,
+    ddp_evaluate,
 )
 import time
 import datetime
@@ -125,12 +126,15 @@ def main(args):
             torch.save(get_peft_model_state_dict(model), os.path.join(args.output_dir, "aggregated_model_{}.bin".format(round)))
         config.save_pretrained(args.output_dir)
         # if (epoch+1) % 2 == 0:    
-        evaluate(round, evaluator, model, args.dataset)
+        ddp_evaluate(round, evaluator, model, args.dataset)
         print("END OF COMMUNICATION: " + str(round))
     for round in tqdm(range(0, args.num_communication_rounds)):
         weights_path = os.path.join(args.output_dir, str(round))
-        if os.path.exists(weights_path):
-            shutil.rmtree(weights_path)
+        try:
+            if os.path.exists(weights_path):
+                shutil.rmtree(weights_path)
+        except FileNotFoundError:
+            print('File has been deleted.')
     training_over_time = time.time()
     training_time = training_over_time - training_start_time
     print("Total training time: " + str(datetime.timedelta(seconds=training_time)))

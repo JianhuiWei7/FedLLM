@@ -92,16 +92,19 @@ class GenerateClient:
         # update local control variate and save it to file
         
         if self.args.useScaffold:
-            local_steps = (len(self.local_train_dataset) // self.args.local_batch_size)*self.args.local_num_epochs
+            # here we use 6 GPUs, so the batch_size has to be multiplied with 6
+            local_steps = (len(self.local_train_dataset) // self.args.local_batch_size*self.args.number_of_GPU_used)*self.args.local_num_epochs
             for k, v in self.model.named_parameters():
-                if v.requires_grad == True:
+
+                if v.requires_grad == True and not "original_module" in k:
+                    v = v.cpu()
                     # change the name of the weight
                     # ['base_model.model.classifier.dense.weight', 'base_model.model.classifier.dense.bias', 'base_model.model.classifier.out_proj.weight', 'base_model.model.classifier.out_proj.bias']
                     if 'classifier' in k:
                         ki = k.replace('.modules_to_save.default', '')
                     else:
                         ki = k[0:-14] + 'weight'
-                    self.client_c[k] = self.client_c[k] - self.server_c[k] + (self.params_dict_old[ki].data - v.data) / (self.args.local_learning_rate*local_steps)
+                    self.client_c[k] = self.client_c[k].cpu() - self.server_c[k].cpu() + (self.params_dict_old[ki].data.cpu() - v.data) / (self.args.local_learning_rate*local_steps)
             filename = os.path.join(self.args.scaffold_dir, "client"+str(self.client_id))
             write_variate_to_file(filename=filename, variate=self.client_c)
         

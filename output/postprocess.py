@@ -32,7 +32,7 @@ if __name__ == "__main__":
     short_result_file_name =  'output/20news-roberta-lora-iid-10-FedAvg/short_result.txt'
     short_result_file_name2 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-FedAvg/short_result.txt'
     short_result_file_name3 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-FedProx-0.001/short_result.txt'
-    short_result_file_name4 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-FeAvgM-0.3/short_result.txt'
+    short_result_file_name4 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-FeAvgM-0.2/short_result.txt'
     # short_result_file_name5 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-FedProx-0.005/short_result.txt'
     file_list = [short_result_file_name, short_result_file_name2, short_result_file_name3, short_result_file_name4]
     draw_acc_curves(file_list)

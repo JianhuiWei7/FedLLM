@@ -125,7 +125,7 @@ def initialize_server_and_client_control_variate(model, num_clients, dir_name):
     num_parameters_for_peft = 0
     # model = get_peft_model_state_dict(model)
     for k, v in model.named_parameters():
-        if v.requires_grad == False:
+        if v.requires_grad == False or "original_module" in k:
             total_num_of_parameters+=1
             continue
         else:
