@@ -26,7 +26,9 @@ def parse_args():
     parser.add_argument('--beta', type=float, default=0.2, help='hyperparameter for FedAvgM beta')
     # Scaffold related arguments
     parser.add_argument('--useScaffold', type=bool, default=True, help='Whether or not use Scaffold')
-    parser.add_argument('--scaffold_dir', type=str, default='/data//jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
+    
+    # parser.add_argument('--scaffold_dir', type=str, default='/data/jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
+    parser.add_argument('--scaffold_dir', type=str, default='/home/jianhuiwei/rsch/jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
     
     parser.add_argument('--local_batch_size', type=int, default=8, help='the batch size per GPU, local total batch size needs to multiply "local_batch_size" with x(number of GPUs) here we use 6 GPUs, and the global batch size is 48')
     parser.add_argument('--number_of_GPU_used', type=int, default=6, help='number of gpu to use')
@@ -45,22 +47,22 @@ def parse_args():
         '20news':20,
     }
     model_paths = {
-        # 'roberta': '/home/jianhuiwei/rsch/jianhui/roberta-base',
-        'roberta': '/data/jianhui/roberta-base',
+        'roberta': '/home/jianhuiwei/rsch/jianhui/roberta-base',
+        # 'roberta': '/data/jianhui/roberta-base',
     }
     output_dirs = {
         'roberta':{
-            # 'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora',
-            'lora': '/data/jianhui/checkpoints/roberta-lora'
+            'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora',
+            # 'lora': '/data/jianhui/checkpoints/roberta-lora'
         },
     }
     data_paths = {
-        # "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news",
-        '20news': "/data/jianhui/dataset/20news"
+        "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news",
+        # '20news': "/data/jianhui/dataset/20news"
     }
     test_data_paths = {
-        # "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/test.json",
-        "20news": "/data/jianhui/dataset/20news/test.json",
+        "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/test.json",
+        # "20news": "/data/jianhui/dataset/20news/test.json",
     }
     args.test_data_path = test_data_paths[args.dataset]
     args.output_dir = output_dirs[args.model][args.peft_method]
