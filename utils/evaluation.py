@@ -35,7 +35,7 @@ class Evaluator():
             self.output_directory = self.output_directory + "-" + args.model + "-" + args.peft_method + "-" + args.partition_method + "-" + str(args.dirichlet_alpha) + "-" + str(args.num_clients) + "-" + args.federated_method
         
         if not os.path.exists(self.output_directory):
-            os.makedirs(self.output_directory)
+            os.makedirs(self.output_directory, exist_ok=True)
         self.output_short_result_file_name = os.path.join(self.output_directory, "short_result.txt")
         testset = load_dataset("json", data_files=args.test_data_path)
         cols = ['instruction', 'response', 'context', 'category']

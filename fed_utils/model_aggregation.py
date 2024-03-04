@@ -17,7 +17,20 @@ def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoc
     for k, client_id in enumerate(selected_clients_set):
         single_output_dir = os.path.join(output_dir, str(epoch), "local_output_{}".format(client_id),
                                          "pytorch_model.bin")
-        single_weights = torch.load(single_output_dir)
+        single_weights = None
+        try:
+            single_weights = torch.load(single_output_dir)
+        except BaseException:
+            try:
+                time.sleep(0.5)
+                single_weights = torch.load(single_output_dir)
+            except BaseException:
+                try:
+                    time.sleep(0.5)
+                    single_weights = torch.load(single_output_dir)
+                except BaseException:
+                    time.sleep(0.5)
+                    single_weights = torch.load(single_output_dir)
         if k == 0:
             weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
         else:
@@ -37,7 +50,22 @@ def FedAvgM(model, selected_clients_set, output_dir, local_dataset_len_dict, epo
     for k, client_id in enumerate(selected_clients_set):
         single_output_dir = os.path.join(output_dir, str(epoch), "local_output_{}".format(client_id),
                                          "pytorch_model.bin")
-        single_weights = torch.load(single_output_dir)
+        single_weights = None
+        try:
+            single_weights = torch.load(single_output_dir)
+        except BaseException:
+            try:
+                time.sleep(0.5)
+                single_weights = torch.load(single_output_dir)
+            except BaseException:
+                try:
+                    time.sleep(0.5)
+                    single_weights = torch.load(single_output_dir)
+                except BaseException:
+                    time.sleep(0.5)
+                    single_weights = torch.load(single_output_dir)
+        
+        
         if k == 0:
             weights_difference = {key: (old_param[key].cpu()-single_weights[key].cpu()) * (weights_array[k]) for key in
                                        single_weights.keys()}
