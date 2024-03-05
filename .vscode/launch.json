@@ -24,6 +24,7 @@
             "request": "launch",
             "program": "/home/jianhuiwei/anaconda3/envs/FedIT11.3/lib/python3.8/site-packages/torch/distributed/run.py",
             "console": "integratedTerminal",
+            "justMyCode": false,
             "args": [
                 "--nproc_per_node=6",
                 "main.py",

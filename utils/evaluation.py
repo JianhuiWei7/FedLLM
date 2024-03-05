@@ -45,8 +45,10 @@ class Evaluator():
 
     
     def batch_run(self, batch_input):
-        if self.args.peft_method == 'prefix_tuning' and self.args.model == 'bert':
-            tokenized_inputs = self.tokenizer(batch_input['full_prompt'], padding='max_length', max_length=self.args.cutoff_len - (self.args.num_virtual_tokens), return_tensors="pt")
+        if self.args.peft_method == 'p_tuningV2' and self.args.model == 'bert':
+            max_length = self.args.cutoff_len - (self.args.num_virtual_tokens)
+            # since Bert use absolute position id, so it is different from roberta
+            tokenized_inputs = self.tokenizer(batch_input['full_prompt'], padding='max_length', max_length=max_length, return_tensors="pt", truncation=True)
         else:
             tokenized_inputs = self.tokenizer(batch_input['full_prompt'], padding='max_length', max_length=self.args.cutoff_len, return_tensors="pt")
         tokenized_inputs = tokenized_inputs.to(device)

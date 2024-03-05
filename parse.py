@@ -1,15 +1,15 @@
 import argparse
 import os
 # lr for roberta-lora: 3e-4
-# lr for roberta-prefix_tuning: 8e-3
+# lr for roberta-p_tuningV2: 8e-3
 # lr for roberta-IA3: 3e-3
 # lr for bert-lora: 3e-3
 # lr for bert-IA3: 3e-3
-# lr for bert-prefix_tuning: 8e-3
+# lr for bert-p_tuningV2: 8e-3
 def parse_args():
     parser = argparse.ArgumentParser(description="Federated Learning PEFine-Tuning for LLM")
-    parser.add_argument('--model', type=str, default='roberta', help='which pretrained model to use, now support Llama2-7B and alpaca')
-    parser.add_argument('--peft_method', type=str, default='prefix_tuning', help='which peft method to use, now support lora, p_tuningV2, IA3')
+    parser.add_argument('--model', type=str, default='bert', help='which pretrained model to use, now support Llama2-7B and alpaca')
+    parser.add_argument('--peft_method', type=str, default='p_tuningV2', help='which peft method to use, now support lora, p_tuningV2, IA3')
     # parameters for lora adapter
     parser.add_argument('--lora_r', type=int, default=8, help='LoRA r parameter')
     parser.add_argument('--lora_alpha', type=int, default=16, help='LoRA alpha parameter')
@@ -61,9 +61,9 @@ def parse_args():
     output_dirs = {
         'roberta':{
             'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora',
-            'p_tuningV2': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-prefix',
+            'p_tuningV2': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-p_tuningV2',
             'IA3': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-IA3',
-            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-prefix2',
+            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-prefix_tuning',
             # 'lora': '/data/jianhui/checkpoints/roberta-lora',
             # 'prefix_tuning': '/data/jianhui/checkpoints/roberta-prefix',
             # 'IA3': /data/jianhui/checkpoints/roberta-IA3',
@@ -71,8 +71,8 @@ def parse_args():
         'bert':{
             'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-lora',
             'IA3': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-IA3',
-            'p_tuningV2': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-prefix',
-            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-prefix2',
+            'p_tuningV2': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-p_tuningV2',
+            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-prefix_tuning',
         }
     }
     data_paths = {

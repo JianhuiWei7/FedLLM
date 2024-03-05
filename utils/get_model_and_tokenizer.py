@@ -6,7 +6,7 @@ def get_Bert_based_model_and_tokenizer(args):
     # load model to GPU
     model = AutoModelForSequenceClassification.from_pretrained(pretrained_model_name_or_path=args.model_path, num_labels=args.num_labels)
     if args.peft_method == 'p_tuningV2' and args.model == 'bert':
-        max_length = args.cutoff_len - (args.num_virtual_tokens+2)
+        max_length = args.cutoff_len - (args.num_virtual_tokens)
         tokenizer = AutoTokenizer.from_pretrained(args.model_path, use_fast=True, model_max_length=max_length)
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_path, use_fast=True)
