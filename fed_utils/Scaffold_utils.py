@@ -16,8 +16,6 @@ from torch import nn
 class ScaffoldOptimizer(Optimizer):
     def __init__(self, params, lr, server_c, client_c):
         defaults = dict(lr=lr, server_c=server_c, client_c=client_c)
-        # self.server_c = server_c
-        # self.client_c = client_c
         super(ScaffoldOptimizer, self).__init__(params, defaults)
 
     def step(self, closure=None):

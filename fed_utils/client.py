@@ -103,10 +103,16 @@ class GenerateClient:
                     v = v.cpu()
                     # change the name of the weight
                     # ['base_model.model.classifier.dense.weight', 'base_model.model.classifier.dense.bias', 'base_model.model.classifier.out_proj.weight', 'base_model.model.classifier.out_proj.bias']
-                    if 'classifier' in k:
-                        ki = k.replace('.modules_to_save.default', '')
-                    else:
-                        ki = k[0:-14] + 'weight'
+                    if self.args.peft_method == 'lora':
+                        if 'classifier' in k:
+                            ki = k.replace('.modules_to_save.default', '')
+                        else:
+                            ki = k[0:-14] + 'weight'
+                    elif self.args.peft_method == 'prefix_tuning':
+                        if 'classifier' in k:
+                            ki = k.replace('.modules_to_save.default', '')
+                        else:
+                            ki = 'prompt_embeddings'
                     self.client_c[k] = self.client_c[k].cpu() - self.server_c[k].cpu() + (self.params_dict_old[ki].data.cpu() - v.data) / (self.args.local_learning_rate*local_steps)
             filename = os.path.join(self.args.scaffold_dir, "client"+str(self.client_id))
             write_variate_to_file(filename=filename, variate=self.client_c)

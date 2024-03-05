@@ -2,7 +2,7 @@ import shutil
 from utils import (
     setup_seed,
     get_Bert_based_model_and_tokenizer,
-    get_lora_peft_model,
+    return_peft_model,
     Evaluator,
     evaluate,
     ddp_evaluate,
@@ -33,8 +33,8 @@ def main(args):
     if not os.path.exists(args.data_path):
         partition_data(args=args)
     # build up model and tokenizer
-    model, tokenizer = get_Bert_based_model_and_tokenizer(model_path=args.model_path, num_labels=args.num_labels)
-    model, config = get_lora_peft_model(model=model, args=args)
+    model, tokenizer = get_Bert_based_model_and_tokenizer(model_path=args.model_path, num_labels=args.num_labels, peft_method=args.peft_method, num_virtual_tokens=args.num_virtual_tokens)
+    model, config = return_peft_model(model=model, args=args)
     model.print_trainable_parameters()
     
     data_tokenizer = DataTokenizer(args=args, tokenizer=tokenizer)
@@ -47,7 +47,7 @@ def main(args):
         # initialize server global momentum
         momentum = get_peft_model_state_dict(model=model)
 
-    # if you want to resume training from checkpoint
+    # if you want to resume training from checkpoint, only work for FedAvg
     # set these parameters
     start_round = 0
     if(args.resume_from_checkpoint):
