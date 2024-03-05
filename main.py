@@ -33,7 +33,7 @@ def main(args):
     if not os.path.exists(args.data_path):
         partition_data(args=args)
     # build up model and tokenizer
-    model, tokenizer = get_Bert_based_model_and_tokenizer(model_path=args.model_path, num_labels=args.num_labels, peft_method=args.peft_method, num_virtual_tokens=args.num_virtual_tokens)
+    model, tokenizer = get_Bert_based_model_and_tokenizer(args)
     model, config = return_peft_model(model=model, args=args)
     model.print_trainable_parameters()
     

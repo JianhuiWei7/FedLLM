@@ -1,15 +1,15 @@
 import argparse
 import os
 # lr for roberta-lora: 3e-4
-# lr for roberta-prefix_tuning: 3e-3
+# lr for roberta-prefix_tuning: 8e-3
 # lr for roberta-IA3: 3e-3
 # lr for bert-lora: 3e-3
 # lr for bert-IA3: 3e-3
-# lr for bert-prefix_tuning: 3e-3
+# lr for bert-prefix_tuning: 8e-3
 def parse_args():
     parser = argparse.ArgumentParser(description="Federated Learning PEFine-Tuning for LLM")
-    parser.add_argument('--model', type=str, default='bert', help='which pretrained model to use, now support Llama2-7B and alpaca')
-    parser.add_argument('--peft_method', type=str, default='prefix_tuning', help='which peft method to use, now support lora, prefix_tuning, IA3')
+    parser.add_argument('--model', type=str, default='roberta', help='which pretrained model to use, now support Llama2-7B and alpaca')
+    parser.add_argument('--peft_method', type=str, default='prefix_tuning', help='which peft method to use, now support lora, p_tuningV2, IA3')
     # parameters for lora adapter
     parser.add_argument('--lora_r', type=int, default=8, help='LoRA r parameter')
     parser.add_argument('--lora_alpha', type=int, default=16, help='LoRA alpha parameter')
@@ -41,7 +41,7 @@ def parse_args():
     parser.add_argument('--number_of_GPU_used', type=int, default=6, help='number of gpu to use')
     # parser.add_argument('--local_micro_batch_size', type=int, default=32, help='Local micro batch size, 16 for 20news,quail. 32 for GLUE')
     parser.add_argument('--local_num_epochs', type=int, default=2, help='Local number of epochs')
-    parser.add_argument('--local_learning_rate', type=float, default=3e-3, help='Local learning rate, 3e-3试过了, for alpaca-lora: 3e-4')
+    parser.add_argument('--local_learning_rate', type=float, default=3e-4, help='Local learning rate, 3e-3试过了, for alpaca-lora: 3e-4')
 
     parser.add_argument('--cutoff_len', type=int, default=512, help='Cutoff length, 512 for GLUE, and 1024 for quail, 2048 for 20news ')
     # the arguments below are for resume training from checkpoint
@@ -61,8 +61,9 @@ def parse_args():
     output_dirs = {
         'roberta':{
             'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora',
-            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-prefix',
+            'p_tuningV2': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-prefix',
             'IA3': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-IA3',
+            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-prefix2',
             # 'lora': '/data/jianhui/checkpoints/roberta-lora',
             # 'prefix_tuning': '/data/jianhui/checkpoints/roberta-prefix',
             # 'IA3': /data/jianhui/checkpoints/roberta-IA3',
@@ -70,7 +71,8 @@ def parse_args():
         'bert':{
             'lora': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-lora',
             'IA3': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-IA3',
-            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-prefix',
+            'p_tuningV2': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-prefix',
+            'prefix_tuning': '/home/jianhuiwei/rsch/jianhui/checkpoints/bert-prefix2',
         }
     }
     data_paths = {

@@ -8,10 +8,10 @@ class DataTokenizer:
 
     def generate_and_tokenize_for_bert_based(self, data_ponit):
         # add_special_tokens: add <s> as CLS token and </s> as SEP token
-        # if self.args.peft_method == 'prefix_tuning':
-        #     cut_off_length = self.args.cutoff_len - self.args.num_virtual_tokens
-        # else:
-        #     cut_off_length = self.args.cutoff_len
-        result = self.tokenizer(text=data_ponit['context'], padding='max_length', add_special_tokens=True,truncation=True, max_length=self.args.cutoff_len)
+        if self.args.peft_method == 'p_tuningV2' and self.args.model == 'bert': 
+            cut_off_length = self.args.cutoff_len - (self.args.num_virtual_tokens)
+        else:
+            cut_off_length = self.args.cutoff_len
+        result = self.tokenizer(text=data_ponit['context'], padding='max_length', add_special_tokens=True,truncation=True, max_length=cut_off_length)
         result['label'] = data_ponit['id_of_label']
         return result

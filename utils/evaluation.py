@@ -45,7 +45,10 @@ class Evaluator():
 
     
     def batch_run(self, batch_input):
-        tokenized_inputs = self.tokenizer(batch_input['full_prompt'], padding='max_length', max_length=self.args.cutoff_len, return_tensors="pt")
+        if self.args.peft_method == 'prefix_tuning' and self.args.model == 'bert':
+            tokenized_inputs = self.tokenizer(batch_input['full_prompt'], padding='max_length', max_length=self.args.cutoff_len - (self.args.num_virtual_tokens), return_tensors="pt")
+        else:
+            tokenized_inputs = self.tokenizer(batch_input['full_prompt'], padding='max_length', max_length=self.args.cutoff_len, return_tensors="pt")
         tokenized_inputs = tokenized_inputs.to(device)
         outputs = self.model(**tokenized_inputs)
         logits = outputs.logits
