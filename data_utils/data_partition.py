@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from interval3 import Interval
 import copy
-
+from data_utils.compute_heterogeneity import compute_heterogeneity
+import pickle
 def partition(data_path, save_path, num_clients, dirichlet_alpha, partition_method="dirichlet_label", num_of_classes_for_stsb=5):
 
     data_path2 = save_path
@@ -66,14 +67,19 @@ def partition(data_path, save_path, num_clients, dirichlet_alpha, partition_meth
             sub_remaining_df_dic = sub_df.to_dict(orient='records')
             with open(os.path.join(data_path2, "local_training_{}.json".format(client_id)), 'w') as outfile:
                 json.dump(sub_remaining_df_dic, outfile, indent=2)
+            # num_for_each_client: number of client * number of labels
         visualize(num_for_each_client, num_clients, data_path2, dirichlet_alpha, unique_label_list, partition_method)
+        data_heterogeneity_for_each_client = compute_heterogeneity(num_for_each_client)
+        with open(os.path.join(data_path2, "heterogeneity.pkl"), 'wb') as f:
+            pickle.dump(data_heterogeneity_for_each_client, f)
+        return data_heterogeneity_for_each_client
     
     elif partition_method == "dirichlet_label":
         if "sts-b" in data_path:
             all_label_list = np.array(df['label'])
         else:
             all_label_list = np.array(df['response'])
-        # set alpha = 10 means that the num of samples are nearly uniformly distributed among clients
+        # set alpha = 100 means that the num of samples are nearly uniformly distributed among clients
         dirichlet_samples = dirichlet.rvs([100] * num_clients, size=1)
         num_samples_per_client = (np.floor(dirichlet_samples * dataset_len).astype(int)).squeeze()
         print(num_samples_per_client)
@@ -267,12 +273,13 @@ class DataPartition:
     def partition(self):
         data_folders = {
             "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/train.json",
+            # "20news": "/data/jianhui/dataset/20news/train.json",
         }
         data_folder = data_folders[self.dataset]
         if self.dataset == "20news":
-            partition(data_path=data_folder, save_path=self.data_path,num_clients=self.num_client, dirichlet_alpha=self.dirichlet_alpha,
+            return partition(data_path=data_folder, save_path=self.data_path,num_clients=self.num_client, dirichlet_alpha=self.dirichlet_alpha,
                       partition_method=self.partition_method)
             
 def partition_data(args):
     data_partition = DataPartition(args)
-    data_partition.partition()
+    return data_partition.partition()

@@ -7,17 +7,26 @@ import torch
 import os
 from torch.nn.functional import normalize
 from fed_utils.Scaffold_utils import load_variate, write_variate_to_file
+import numpy as np
 
-def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoch):
+def softmax(inputs):
+    exp_values = np.exp(inputs)
+    softmax_values = exp_values / np.sum(exp_values)
+    return softmax_values
+
+def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoch, data_heterogeneity):
     weights_array = normalize(
         torch.tensor([local_dataset_len_dict[client_id] for client_id in selected_clients_set],
                      dtype=torch.float32),
         p=1, dim=0)
+    heterogeneity_reciprocal = np.reciprocal([data_heterogeneity[client_id] for client_id in selected_clients_set])
+    heterogeneity_weight = softmax(heterogeneity_reciprocal)
 
     for k, client_id in enumerate(selected_clients_set):
         single_output_dir = os.path.join(output_dir, str(epoch), "local_output_{}".format(client_id),
                                          "pytorch_model.bin")
         single_weights = None
+        # here, to prevent the error caused by multiple process reading the same file.
         try:
             single_weights = torch.load(single_output_dir)
         except BaseException:
@@ -31,10 +40,11 @@ def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoc
                 except BaseException:
                     time.sleep(0.5)
                     single_weights = torch.load(single_output_dir)
+
         if k == 0:
-            weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
+            weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) * (heterogeneity_weight[k]) for key in single_weights.keys()}
         else:
-            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
+            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key].cpu() * (weights_array[k]) * (heterogeneity_weight[k]) for key in single_weights.keys()}
 
     set_peft_model_state_dict(model, weighted_single_weights, "default")
 

@@ -26,13 +26,17 @@ from peft import (
     get_peft_model_state_dict,
 )
 from parse import parse_args
+import pickle
 def main(args):
     # to be able to replicate the experiment results
     setup_seed(7)
     # partition data:
     if not os.path.exists(args.data_path):
-        partition_data(args=args)
-    # build up model and tokenizer
+        data_heterogeneity = partition_data(args=args)
+    else:
+        with open(os.path.join(args.data_path, "heterogeneity.pkl"), 'rb') as file:
+            data_heterogeneity = pickle.load(file)
+    print(data_heterogeneity)
     model, tokenizer = get_Bert_based_model_and_tokenizer(args)
     model, config = return_peft_model(model=model, args=args)
     model.print_trainable_parameters()
@@ -119,6 +123,7 @@ def main(args):
                         args.output_dir,
                         local_dataset_len_dict,
                         round,
+                        data_heterogeneity,
                         )
 
         # save checkpoints every 5 rounds
