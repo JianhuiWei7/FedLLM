@@ -1,7 +1,5 @@
 import time
 import datetime
 import numpy as np
-alpha = [1000, 1000, 1000, 1000, 1000]
-p_dirichlet = np.random.dirichlet(alpha)
-print(p_dirichlet)
-print(np.sum(p_dirichlet))
+data_heterogeneity = [1 for _ in range(10)]
+print(data_heterogeneity)

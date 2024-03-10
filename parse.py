@@ -37,6 +37,7 @@ def parse_args():
     # parser.add_argument('--scaffold_dir', type=str, default='/data/jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
     parser.add_argument('--scaffold_dir', type=str, default='/home/jianhuiwei/rsch/jianhui/scaffold_control_variate', help='the dir to save variate for server and client')
     
+    parser.add_argument('--useHeterogeneityWeight', type=bool, default=False, help='Whether useHeterogeneityWeight')
     parser.add_argument('--local_batch_size', type=int, default=8, help='the batch size per GPU, local total batch size needs to multiply "local_batch_size" with x(number of GPUs) here we use 6 GPUs, and the global batch size is 48')
     parser.add_argument('--number_of_GPU_used', type=int, default=6, help='number of gpu to use')
     # parser.add_argument('--local_micro_batch_size', type=int, default=32, help='Local micro batch size, 16 for 20news,quail. 32 for GLUE')
