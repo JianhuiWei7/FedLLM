@@ -29,10 +29,10 @@ def draw_acc_curves(short_result_file_names):
 if __name__ == "__main__":
     # response_path = 'output/quail-dirichlet_label_alpha=1-imbalanced_label-alpaca-lora/19.xlsx'
     # process_result_from_quail(response_path)
-    short_result_file_name =  'output/20news-roberta-lora-dirichlet_label_uni-1-10-FedAvg/short_result.txt'
-    short_result_file_name2 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-FeAvgM-0.2/short_result.txt'
-    short_result_file_name3 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-FedProx-0.001/short_result.txt'
+    short_result_file_name =  'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-NewMethod-var/short_result.txt'
+    short_result_file_name2 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-FedAvg/short_result.txt'
+    short_result_file_name3 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-NewMethod/short_result.txt'
     short_result_file_name4 = 'output/20news-roberta-lora-dirichlet_label_uni-1-10-Scaffold-0.5/short_result.txt'
     # short_result_file_name5 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-FedProx-0.005/short_result.txt'
-    file_list = [short_result_file_name, short_result_file_name2, short_result_file_name3, short_result_file_name4]
+    file_list = [short_result_file_name,short_result_file_name3 ]
     draw_acc_curves(file_list)

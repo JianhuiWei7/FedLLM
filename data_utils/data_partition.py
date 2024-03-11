@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from interval3 import Interval
 import copy
-from data_utils.compute_heterogeneity import compute_heterogeneity
 import pickle
 def partition(data_path, save_path, num_clients, dirichlet_alpha, partition_method="dirichlet_label", num_of_classes_for_stsb=5):
 
@@ -69,10 +68,9 @@ def partition(data_path, save_path, num_clients, dirichlet_alpha, partition_meth
                 json.dump(sub_remaining_df_dic, outfile, indent=2)
             # num_for_each_client: number of client * number of labels
         visualize(num_for_each_client, num_clients, data_path2, dirichlet_alpha, unique_label_list, partition_method)
-        data_heterogeneity_for_each_client = compute_heterogeneity(num_for_each_client)
         with open(os.path.join(data_path2, "heterogeneity.pkl"), 'wb') as f:
-            pickle.dump(data_heterogeneity_for_each_client, f)
-        return data_heterogeneity_for_each_client
+            pickle.dump(num_for_each_client, f)
+        return num_for_each_client
     
     elif partition_method == "dirichlet_label":
         if "sts-b" in data_path:
@@ -272,8 +270,8 @@ class DataPartition:
 
     def partition(self):
         data_folders = {
-            "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/train.json",
-            # "20news": "/data/jianhui/dataset/20news/train.json",
+            # "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/train.json",
+            "20news": "/data/jianhui/dataset/20news/train.json",
         }
         data_folder = data_folders[self.dataset]
         if self.dataset == "20news":

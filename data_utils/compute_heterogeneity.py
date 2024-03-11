@@ -3,7 +3,7 @@ import numpy as np
 def compute_heterogeneity(num_for_each_client):
     heterogeneity_for_each_client = []
     for item in num_for_each_client:
-        heterogeneity_for_each_client.append(np.var(item))
+        heterogeneity_for_each_client.append(np.std(item))
     return heterogeneity_for_each_client
 
 

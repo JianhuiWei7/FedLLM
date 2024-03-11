@@ -1,5 +1,5 @@
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from peft import LoraConfig, get_peft_model, PrefixTuningConfig, IA3Config
+from peft import LoraConfig, get_peft_model, PrefixTuningConfig
 import torch
 def get_Bert_based_model_and_tokenizer(args):
     device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -18,8 +18,8 @@ def return_peft_model(model, args):
         return get_lora_peft_model(model=model, args=args)
     elif args.peft_method == 'p_tuningV2':
         return get_p_tuningV2_peft_model(model=model, args=args)
-    elif args.peft_method == 'IA3':
-        return get_IA3_peft_model(model=model, args=args)
+    # elif args.peft_method == 'IA3':
+    #     return get_IA3_peft_model(model=model, args=args)
     elif args.peft_method == "prefix_tuning":
         return get_prefix_tuning_peft_model(model=model, args=args)
 
@@ -53,12 +53,12 @@ def get_prefix_tuning_peft_model(model, args):
     model = get_peft_model(model, config)
     return model, config
 
-def get_IA3_peft_model(model, args):
-    config = IA3Config(
-        task_type="SEQ_CLS",
-    )
-    model = get_peft_model(model, config)
-    return model, config
+# def get_IA3_peft_model(model, args):
+#     config = IA3Config(
+#         task_type="SEQ_CLS",
+#     )
+#     model = get_peft_model(model, config)
+#     return model, config
 
 # def get_BitFit_peft_model(modedl, args):
 #     for k, v in modedl.named_parameters():

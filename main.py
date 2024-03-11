@@ -27,17 +27,20 @@ from peft import (
 )
 from parse import parse_args
 import pickle
+from data_utils.compute_heterogeneity import compute_heterogeneity
 def main(args):
     # to be able to replicate the experiment results
     setup_seed(7)
     # partition data:
     if not os.path.exists(args.data_path):
-        data_heterogeneity = partition_data(args=args)
+        num_for_each_client = partition_data(args=args)
     else:
         with open(os.path.join(args.data_path, "heterogeneity.pkl"), 'rb') as file:
-            data_heterogeneity = pickle.load(file)
+            num_for_each_client = pickle.load(file)
+    data_heterogeneity = compute_heterogeneity(num_for_each_client)
     if not args.useHeterogeneityWeight:
-        data_heterogeneity = [1 for _ in range(args.num_clients)]
+        # assume that the variance for every client are 0, iid.
+        data_heterogeneity = [0 for _ in range(args.num_clients)]
     print(data_heterogeneity)
     model, tokenizer = get_Bert_based_model_and_tokenizer(args)
     model, config = return_peft_model(model=model, args=args)

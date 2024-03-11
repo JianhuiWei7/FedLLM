@@ -15,12 +15,16 @@ def softmax(inputs):
     return softmax_values
 
 def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoch, data_heterogeneity):
-    weights_array = normalize(
-        torch.tensor([local_dataset_len_dict[client_id] for client_id in selected_clients_set],
-                     dtype=torch.float32),
-        p=1, dim=0)
-    heterogeneity_reciprocal = np.reciprocal([data_heterogeneity[client_id] for client_id in selected_clients_set])
-    heterogeneity_weight = softmax(heterogeneity_reciprocal)
+    num_data_per_client = [local_dataset_len_dict[client_id] for client_id in selected_clients_set]
+    # "+1": prevent 0 as denominator
+    heterogeneity_reciprocal = np.reciprocal([data_heterogeneity[client_id] + 1 for client_id in selected_clients_set])
+    num_data_to_heterogeneity = [x*y for x, y in zip(num_data_per_client, heterogeneity_reciprocal)]
+    weights_array = normalize( torch.tensor(num_data_to_heterogeneity,dtype=torch.float32),p=1, dim=0 )
+    
+    
+    # weights_array = normalize(
+    #     torch.tensor([local_dataset_len_dict[client_id] for client_id in selected_clients_set],
+    #                  dtype=torch.float32),p=1, dim=0)
 
     for k, client_id in enumerate(selected_clients_set):
         single_output_dir = os.path.join(output_dir, str(epoch), "local_output_{}".format(client_id),
@@ -42,9 +46,9 @@ def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoc
                     single_weights = torch.load(single_output_dir)
 
         if k == 0:
-            weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) * (heterogeneity_weight[k]) for key in single_weights.keys()}
+            weighted_single_weights = {key: single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
         else:
-            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key].cpu() * (weights_array[k]) * (heterogeneity_weight[k]) for key in single_weights.keys()}
+            weighted_single_weights = {key: weighted_single_weights[key] + single_weights[key].cpu() * (weights_array[k]) for key in single_weights.keys()}
 
     set_peft_model_state_dict(model, weighted_single_weights, "default")
 
