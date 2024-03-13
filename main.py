@@ -67,18 +67,23 @@ def main(args):
     evaluator = Evaluator(args)
     evaluator.tokenizer = tokenizer
     training_start_time = time.time()
+    # the new method now only works with FedProx
+    HeterogeneityWeightFlag = args.useHeterogeneityWeight
+    ProxFlag = args.useFedProx
+    DifferentMuFlag = args.useDifferentMu
     print("The process of federated instruction-tuning has started..")
     for round in tqdm(range(start_round, args.num_communication_rounds)):
+        # warm up rounds use FedAvg
         if args.warmUpRpunds > 0 and round < args.warmUpRpunds:
             args.useHeterogeneityWeight = False
             args.useFedProx = False
-            args.useDifferentMu = False
-            print('warming up steps')
-        else:
-            args.useHeterogeneityWeight = False
             args.useFedProx = False
-            args.useDifferentMu = False
-            print('methods step')
+            print('warming up rounds')
+        else:
+            args.useHeterogeneityWeight = HeterogeneityWeightFlag
+            args.useFedProx = ProxFlag
+            args.useDifferentMu = DifferentMuFlag
+            print('methods rounds')
 
         if args.useScaffold:
             filename = os.path.join(dir_name, "server_c")
