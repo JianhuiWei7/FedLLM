@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 from fed_utils.Scaffold_utils import ScaffoldOptimizer, write_variate_to_file
 from fed_utils.FedProx_utils import FedProx
 from utils.select_trainer_optimizer import select_trainer
+import numpy as np
 class GenerateClient:
     def __init__(self, args, client_id, model, output_dir, client_c=None, server_c=None):
         self.args = args
@@ -84,7 +85,11 @@ class GenerateClient:
         self.model.config.use_cache = False
         self.params_dict_old = copy.deepcopy(get_peft_model_state_dict(self.model))
 
-    def train(self):
+    def train(self, data_heterogeneity):
+        if self.args.useDifferentMu:
+            mean_heterogeneity = np.mean(data_heterogeneity)
+            if mean_heterogeneity != 0:
+                self.args.proximal_term_argument = self.args.proximal_term_argument * (data_heterogeneity[self.client_id] / mean_heterogeneity)
         if self.args.useFedProx:
             self.local_trainer.set_previous_peft_weights(self.params_dict_old)
             self.local_trainer.set_proximal_term_mu(self.args.proximal_term_argument)

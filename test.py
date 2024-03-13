@@ -8,6 +8,9 @@ def softmax(inputs):
     exp_values = np.exp(inputs)
     softmax_values = exp_values / np.sum(exp_values)
     return softmax_values
-heterogeneity_value = softmax(data_heterogeneity)
-new_weight_array = softmax([x*y for x, y in zip(weight_array, heterogeneity_value)])
-print(new_weight_array)
+
+def test_Fun(x, y):
+    x = x+12
+x = 10
+test_Fun(x,1)
+print(x)

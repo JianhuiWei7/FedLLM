@@ -270,8 +270,8 @@ class DataPartition:
 
     def partition(self):
         data_folders = {
-            # "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/train.json",
-            "20news": "/data/jianhui/dataset/20news/train.json",
+            "20news": "/home/jianhuiwei/rsch/jianhui/dataset/20news/train.json",
+            # "20news": "/data/jianhui/dataset/20news/train.json",
         }
         data_folder = data_folders[self.dataset]
         if self.dataset == "20news":

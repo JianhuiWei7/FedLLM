@@ -38,9 +38,6 @@ def main(args):
         with open(os.path.join(args.data_path, "heterogeneity.pkl"), 'rb') as file:
             num_for_each_client = pickle.load(file)
     data_heterogeneity = compute_heterogeneity(num_for_each_client)
-    if not args.useHeterogeneityWeight:
-        # assume that the variance for every client are 0, iid.
-        data_heterogeneity = [0 for _ in range(args.num_clients)]
     print(data_heterogeneity)
     model, tokenizer = get_Bert_based_model_and_tokenizer(args)
     model, config = return_peft_model(model=model, args=args)
@@ -72,6 +69,17 @@ def main(args):
     training_start_time = time.time()
     print("The process of federated instruction-tuning has started..")
     for round in tqdm(range(start_round, args.num_communication_rounds)):
+        if args.warmUpRpunds > 0 and round < args.warmUpRpunds:
+            args.useHeterogeneityWeight = False
+            args.useFedProx = False
+            args.useDifferentMu = False
+            print('warming up steps')
+        else:
+            args.useHeterogeneityWeight = False
+            args.useFedProx = False
+            args.useDifferentMu = False
+            print('methods step')
+
         if args.useScaffold:
             filename = os.path.join(dir_name, "server_c")
             server_c = load_variate(filename)
@@ -96,7 +104,7 @@ def main(args):
             print("Initiating the local training of Client_{}".format(client_id))
             client.initiate_local_training()
             print("Local training starts ... ")
-            client.train()
+            client.train(data_heterogeneity)
             print("\nTerminating the local training of Client_{}".format(client_id))
             model, local_dataset_len_dict, previously_selected_clients_set = client.terminate_local_training(
                 round, local_dataset_len_dict, previously_selected_clients_set)
@@ -129,6 +137,7 @@ def main(args):
                         local_dataset_len_dict,
                         round,
                         data_heterogeneity,
+                        args.useHeterogeneityWeight,
                         )
 
         # save checkpoints every 5 rounds

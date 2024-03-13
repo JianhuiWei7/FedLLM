@@ -14,8 +14,11 @@ def softmax(inputs):
     softmax_values = exp_values / np.sum(exp_values)
     return softmax_values
 
-def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoch, data_heterogeneity):
+def FedAvg(model, selected_clients_set, output_dir, local_dataset_len_dict, epoch, data_heterogeneity, useHeterogeneityWeight):
     num_data_per_client = [local_dataset_len_dict[client_id] for client_id in selected_clients_set]
+    if not useHeterogeneityWeight:
+        # assume that the variance for every client are 0, iid.
+        data_heterogeneity = [0 for _ in range(len(data_heterogeneity))]
     # "+1": prevent 0 as denominator
     heterogeneity_reciprocal = np.reciprocal([data_heterogeneity[client_id] + 1 for client_id in selected_clients_set])
     num_data_to_heterogeneity = [x*y for x, y in zip(num_data_per_client, heterogeneity_reciprocal)]
