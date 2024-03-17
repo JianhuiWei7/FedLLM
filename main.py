@@ -37,8 +37,9 @@ def main(args):
     else:
         with open(os.path.join(args.data_path, "heterogeneity.pkl"), 'rb') as file:
             num_for_each_client = pickle.load(file)
-    data_heterogeneity = compute_heterogeneity(num_for_each_client)
-    print(data_heterogeneity)
+    relative_heterogeneity_for_each_client, std_for_each_client = compute_heterogeneity(num_for_each_client)
+    print(num_for_each_client)
+    print(relative_heterogeneity_for_each_client)
     model, tokenizer = get_Bert_based_model_and_tokenizer(args)
     model, config = return_peft_model(model=model, args=args)
     model.print_trainable_parameters()
@@ -109,7 +110,7 @@ def main(args):
             print("Initiating the local training of Client_{}".format(client_id))
             client.initiate_local_training()
             print("Local training starts ... ")
-            client.train(data_heterogeneity)
+            client.train(relative_heterogeneity_for_each_client)
             print("\nTerminating the local training of Client_{}".format(client_id))
             model, local_dataset_len_dict, previously_selected_clients_set = client.terminate_local_training(
                 round, local_dataset_len_dict, previously_selected_clients_set)
@@ -141,7 +142,7 @@ def main(args):
                         args.output_dir,
                         local_dataset_len_dict,
                         round,
-                        data_heterogeneity,
+                        std_for_each_client,
                         args.useHeterogeneityWeight,
                         )
 

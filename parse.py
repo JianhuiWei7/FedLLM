@@ -13,7 +13,7 @@ def parse_args():
     # parameters for lora adapter
     parser.add_argument('--lora_r', type=int, default=8, help='LoRA r parameter')
     parser.add_argument('--lora_alpha', type=int, default=16, help='LoRA alpha parameter')
-    parser.add_argument('--lora_dropout', type=float, default=0.05, help='LoRA dropout rate')
+    parser.add_argument('--lora_dropout', type=float, default=0.1, help='LoRA dropout rate')
     parser.add_argument('--lora_target_modules', nargs='+', default=["q_proj", "k_proj", "v_proj", "o_proj"], help='LoRA target modules')
     # parameters for prefix tuning
     parser.add_argument('--num_virtual_tokens', type=int, default=8, help='num of virtual tokens for prefix tuning')
@@ -28,9 +28,10 @@ def parse_args():
     # FedProx and new method related arguments              
     parser.add_argument('--useFedProx', type=bool, default=True, help='Whether or not add proximal term to the loss function')
     parser.add_argument('--proximal_term_argument', type=float, default=0.1, help='the mu for proximal term')
+    # three improvements added to the FedProx
     parser.add_argument('--useDifferentMu', type=bool, default=False, help='Whether useHeterogeneityWeight')
     parser.add_argument('--warmUpRpunds', type=int, default=0, help='Warm up rounds before using any methods')
-    parser.add_argument('--useHeterogeneityWeight', type=bool, default=False, help='Whether useHeterogeneityWeight')
+    parser.add_argument('--useHeterogeneityWeight', type=bool, default=True, help='Whether useHeterogeneityWeight')
     # FedAvgM related arguments
     parser.add_argument('--useFedAvgM', type=bool, default=False, help='Whether or not use FedAvgM for aggregation')
     parser.add_argument('--beta', type=float, default=0.7, help='hyperparameter for FedAvgM beta')
@@ -46,8 +47,8 @@ def parse_args():
     parser.add_argument('--local_learning_rate', type=float, default=3e-4, help='Local learning rate, 3e-3试过了, for alpaca-lora: 3e-4')
     parser.add_argument('--cutoff_len', type=int, default=512, help='Cutoff length, 512 for GLUE, and 1024 for quail, 2048 for 20news ')
     # the arguments below are for resume training from checkpoint
-    parser.add_argument('--resume_from_checkpoint', type=bool, default=True, help='Resume from checkpoint')
-    parser.add_argument('--parameter_path', type=str, default='/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora/20news-dirichlet_label_uni-0.05-10-FedProx-0.1/aggregated_model_44.bin', help='the parameter path for checkpoint')
+    parser.add_argument('--resume_from_checkpoint', type=bool, default=False, help='Resume from checkpoint')
+    parser.add_argument('--parameter_path', type=str, default='/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora/20news-dirichlet_label_uni-0.5-10-NewMethod/aggregated_model_44.bin', help='the parameter path for checkpoint')
     parser.add_argument('--start_round', type=int, default=45, help='the parameter path for checkpoint')
     args = parser.parse_args()
     num_labels_for_each_datasets = {
@@ -88,13 +89,14 @@ def parse_args():
     args.test_data_path = test_data_paths[args.dataset]
     args.output_dir = output_dirs[args.model][args.peft_method]
     if args.useFedProx:
-        args.federated_method ='FedProx-' + str(args.proximal_term_argument)
+        if args.useHeterogeneityWeight or args.useDifferentMu:
+            args.federated_method ='NewMethod'
+        else:
+            args.federated_method ='FedProx-' + str(args.proximal_term_argument)
     elif args.useFedAvgM:
         args.federated_method ='FedAvgM-' + str(args.beta)
     elif args.useScaffold:
-        args.federated_method ='Scaffold-' + str(args.local_learning_rate)
-    elif args.useHeterogeneityWeight:
-        args.federated_method ='NewMethod'
+        args.federated_method ='Scaffold-' + str(args.local_learning_rate) 
     else:
         args.federated_method='FedAvg'
     if args.partition_method == 'iid':
