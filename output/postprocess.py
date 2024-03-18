@@ -33,10 +33,10 @@ def draw_acc_curves(short_result_file_names):
 if __name__ == "__main__":
     # response_path = 'output/quail-dirichlet_label_alpha=1-imbalanced_label-alpaca-lora/19.xlsx'
     # process_result_from_quail(response_path)
-    short_result_file_name = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-FedProx-0.1/short_result.txt'
-    short_result_file_name2 = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-NewMethod/std 0.8 weight.txt'
-    short_result_file_name3 = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-NewMethod/short_result.txt'
-    short_result_file_name4 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-FedProx-0.07-method1+2+3/short_result.txt'
+    short_result_file_name = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-NewMethod/std 0.8 weight. std 0.8 mu prox 0.07.txt'
+    short_result_file_name2 = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-NewMethod/std weight randomseed 8 prox 0.07.txt'
+    short_result_file_name3 = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-NewMethod/std weight.txt'
+    short_result_file_name4 = 'output/20news-roberta-lora-dirichlet_label_uni-0.05-10-FedProx-0.1/short_result.txt'
     short_result_file_name5 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-FedProx-0.07-method1+2+3/short_result.txt'
     # short_result_file_name5 = 'output/20news-roberta-lora-dirichlet_label_uni-0.1-10-FedProx-0.005/short_result.txt'
     file_list = [short_result_file_name, short_result_file_name2]

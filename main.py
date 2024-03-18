@@ -28,6 +28,7 @@ from peft import (
 from parse import parse_args
 import pickle
 from data_utils.compute_heterogeneity import compute_heterogeneity
+import numpy as np
 def main(args):
     # to be able to replicate the experiment results
     setup_seed(7)

@@ -23,14 +23,14 @@ def parse_args():
     parser.add_argument('--partition_method', type=str, default="dirichlet_label_uni", help='The method used to partition the data, choose from [''iid'', ''dirichlet_label_uni'', ''dirichlet_label'', ''dirichlet_quantity'']')
     parser.add_argument('--client_selection_strategy', type=str, default='random', help='Client selection strategy')
     parser.add_argument('--client_selection_frac', type=float, default=0.4, help='Fraction of clients to select')
-    parser.add_argument('--num_communication_rounds', type=int, default=60, help='Number of communication rounds')
+    parser.add_argument('--num_communication_rounds', type=int, default=70, help='Number of communication rounds')
     parser.add_argument('--num_clients', type=int, default=10, help='Number of clients')
     # FedProx and new method related arguments              
     parser.add_argument('--useFedProx', type=bool, default=True, help='Whether or not add proximal term to the loss function')
-    parser.add_argument('--proximal_term_argument', type=float, default=0.1, help='the mu for proximal term')
+    parser.add_argument('--proximal_term_argument', type=float, default=0.07, help='the mu for proximal term')
     # three improvements added to the FedProx
-    parser.add_argument('--useDifferentMu', type=bool, default=False, help='Whether useHeterogeneityWeight')
-    parser.add_argument('--warmUpRpunds', type=int, default=0, help='Warm up rounds before using any methods')
+    parser.add_argument('--useDifferentMu', type=bool, default=True, help='Whether useHeterogeneityWeight')
+    parser.add_argument('--warmUpRpunds', type=int, default=3, help='Warm up rounds before using any methods')
     parser.add_argument('--useHeterogeneityWeight', type=bool, default=True, help='Whether useHeterogeneityWeight')
     # FedAvgM related arguments
     parser.add_argument('--useFedAvgM', type=bool, default=False, help='Whether or not use FedAvgM for aggregation')
@@ -48,8 +48,8 @@ def parse_args():
     parser.add_argument('--cutoff_len', type=int, default=512, help='Cutoff length, 512 for GLUE, and 1024 for quail, 2048 for 20news ')
     # the arguments below are for resume training from checkpoint
     parser.add_argument('--resume_from_checkpoint', type=bool, default=False, help='Resume from checkpoint')
-    parser.add_argument('--parameter_path', type=str, default='/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora/20news-dirichlet_label_uni-0.5-10-NewMethod/aggregated_model_44.bin', help='the parameter path for checkpoint')
-    parser.add_argument('--start_round', type=int, default=45, help='the parameter path for checkpoint')
+    parser.add_argument('--parameter_path', type=str, default='/home/jianhuiwei/rsch/jianhui/checkpoints/roberta-lora/20news-dirichlet_label_uni-0.05-10-FedAvg/aggregated_model_59.bin', help='the parameter path for checkpoint')
+    parser.add_argument('--start_round', type=int, default=60, help='the parameter path for checkpoint')
     args = parser.parse_args()
     num_labels_for_each_datasets = {
         'rte':2,
